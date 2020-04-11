@@ -1,10 +1,8 @@
 from itertools import count
 
-
 class Printer(object):
     def print(self, str):
         print(str)
-
 
 class Reservation_Template(object):
     _ids = count(0)
@@ -19,7 +17,7 @@ class Reservation_Template(object):
 
     def overlapping(self, other):
         return (self._book == other._book and self._to >= other._from
-                and self._to >= other._from)
+                and self._from <= other._to)
 
     def includes(self, date):
         return (self._from <= date <= self._to)
@@ -65,7 +63,7 @@ class Reservation(Reservation_Template):
         ret = super(Reservation, self).identify(date, book, for_)
         if ret[0]:
             self.printer.print(self.printer, F'Reservation {self._id} is valid {for_} of {book} on {date}.')
-        if not ret[0]:
+        else:
             if ret[1] == 'book': self.printer.print(self.printer,
                                                     F'Reservation {self._id} reserves {self._book} not {book}.')
             if ret[1] == 'for': self.printer.print(self.printer,
@@ -93,6 +91,7 @@ class Library_Template(object):
 
     def add_book(self, name):
         self._books[name] = self._books.get(name, 0) + 1
+        return self._books[name]
 
     def reserve_book(self, user, book, date_from, date_to, reservation_factory=Reservation):
         book_count = self._books.get(book, 0)
@@ -133,43 +132,43 @@ class Library_Template(object):
 
 
 class Library(Library_Template):
-    def __init__(self, printer):
+    def __init__(self, printer=Printer):
         self.printer = printer
         self.printer.print(self.printer, F'Library created.')
-        super(Library, self).__init__(self)
+        super(Library, self).__init__()
 
     def add_user(self, name):
         ret = super(Library, self).add_user(name)
         if ret:
-            self.printer.print(F'User {name} created.')
+            self.printer.print(self.printer, F'User {name} created.')
         else:
-            self.printer.print(F'User not created, user with name {name} already exists.')
+            self.printer.print(self.printer, F'User not created, user with name {name} already exists.')
         return ret
 
     def add_book(self, name):
-        self.printer.print(F'Book {name} added. We have {self._books[name]} coppies of the book.')
-        super(Library, self).add_book(name)
+        ret = super(Library, self).add_book(name)
+        self.printer.print(self.printer, F'Book {name} added. We have {ret} coppies of the book.')
 
     def reserve_book(self, user, book, date_from, date_to):
         ret = super(Library, self).reserve_book(user, book, date_from, date_to)
         if ret[0]:
-            self.printer.print(F'Reservation {ret[1]} included.')
+            self.printer.print(self.printer, F'Reservation {ret[1]} included.')
 
         else:
             if ret[1] == 'user':
-                self.printer.print(F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
+                self.printer.print(self.printer, F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
                                    F'User does not exist.')
 
             if ret[1] == 'date':
-                self.printer.print(F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
+                self.printer.print(self.printer, F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
                                    F'Incorrect dates.')
 
             if ret[1] == 'book':
-                self.printer.print(F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
+                self.printer.print(self.printer, F'We cannot reserve book {book} for {user} from {date_from} to {date_to}. ' +
                                    F'We do not have that book.')
 
             if ret[1] == 'reservation':
-                self.printer.print(F'We cannot reserve book {book} for {user} from {date_from} ' +
+                self.printer.print(self.printer, F'We cannot reserve book {book} for {user} from {date_from} ' +
                                    F'to {date_to}. We do not have enough books.')
         return ret[0]
 
@@ -178,32 +177,56 @@ class Library(Library_Template):
         str = 'exists'
         if not ret:
             str = 'does not exist'
-        self.printer.print(F'Reservation for {user} of {book} on {date} {str}.')
+        self.printer.print(self.printer, F'Reservation for {user} of {book} on {date} {str}.')
         return ret
 
     def change_reservation(self, user, book, date, new_user):
         ret = super(Library, self).change_reservation(user, book, date, new_user)
 
         if ret[0]:
-            self.printer.print(F'Reservation for {user} of {book} on {date} changed to {new_user}.')
+            self.printer.print(self.printer, F'Reservation for {user} of {book} on {date} changed to {new_user}.')
         else:
             if ret[1] == 'reservation':
-                self.printer.print(F'Reservation for {user} of {book} on {date} does not exist.')
+                self.printer.print(self.printer, F'Reservation for {user} of {book} on {date} does not exist.')
 
             if ret[1] == 'new_user':
-                self.printer.print(F'Cannot change the reservation as {new_user} does not exist.')
+                self.printer.print(self.printer, F'Cannot change the reservation as {new_user} does not exist.')
 
         return ret[0]
 
 
-r = Reservation(5, 12, "dorian grey", 45)
-p = Reservation(8, 10, "dorian grey", 49)
+r = Reservation(5, 12, "Dorian Grey", "Peter McCallister")
+p = Reservation(8, 10, "Atlas", "Joe Peschi")
+q = Reservation(6, 9, "Dorian Grey", "Megan McCallister")
 
+
+print("RESERVATION \n")
 r.overlapping(p)
-r.includes(6)
-p.includes(10)
+r.overlapping(q)
+r.includes(5)
+r.includes(4)
 
-r.identify(10, "dorian grey", 45)
-r.identify(10, "dorian grey", 46)
-r.change_for(100)
+r.identify(10, "Dorian Grey", "Buzz")
+r.identify(12, "Dorian Grey", "Peter McCallister")
+
+r.change_for("Uncle Frank")
 r.includes(99)
+print("\n")
+
+print("LIBRARY \n")
+lib = Library()
+lib.add_user("Carol")
+lib.add_user("Carol")
+lib.add_user("Helen")
+lib.add_book("ABC")
+lib.add_book("ABC")
+lib.add_book("Dracula")
+lib.reserve_book("Helen", "Dracula", 2, 10)
+lib.reserve_book("Helen", "ABC", 2, 10)
+print("")
+lib.change_reservation("Helen", "ABC", 4, "Carol")
+print("")
+lib.check_reservation("Carol", "ABC", 6)
+
+
+
