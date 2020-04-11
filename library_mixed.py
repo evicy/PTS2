@@ -1,52 +1,97 @@
 from itertools import count
 
-class Reservation(object):
-    _ids = count(0)
-    
-    def __init__(self, from_, to, book, for_):
-        self._id = next(Reservation._ids)
+class Reservation_Template(object):
+
+    def __init__(self, from_, to, book, for_, id):
+        self._id = id
         self._from = from_
-        self._to = to    
+        self._to = to
         self._book = book
         self._for = for_
         self._changes = 0
-        print(F'Created a reservation with id {self._id} of {self._book} '+
+
+    def overlapping(self, other):
+        return (self._book == other._book and self._to >= other._from 
+               and self._to >= other._from)
+
+    def includes(self, date):
+        return (self._from <= date <= self._to)
+
+    def identify(self, date, book, for_):
+        pass
+    
+    def change_for(self, for_):
+        self._for = for_
+
+class Reservation_Message(Reservation_Template):
+
+    def __init__(self, from_, to, book, for_, id):
+        super().__init__(from_, to, book, for_, id)
+        print(F'Created a reservation with id {self._id} of {self._book} ' +
               F'from {self._from} to {self._to} for {self._for}.')
 
     def overlapping(self, other):
-        ret = (self._book == other._book and self._to >= other._from 
-               and self._to >= other._from)
+        ret = super(Reservation_Message, self).overlapping(other)
         str = 'do'
         if not ret:
             str = 'do not'
         print(F'Reservations {self._id} and {other._id} {str} overlap')
-        return ret
-            
+
     def includes(self, date):
-        ret = (self._from <= date <= self._to)
+        ret = super(Reservation_Message, self).includes(date)
         str = 'includes'
         if not ret:
             str = 'does not include'
         print(F'Reservation {self._id} {str} {date}')
-        return ret        
+
+    def identify_book_problem(self, book):
+        print(F'Reservation {self._id} reserves {self._book} not {book}.')
+
+    def identify_for_problem(self, for_):
+        print(F'Reservation {self._id} is for {self._for} not {for_}.')
+
+    def identify_date_problem(self, date):
+        print(F'Reservation {self._id} is from {self._from} to {self._to} which ' +
+              F'does not include {date}.')
+
+    def identify(self, date, book, for_):
+        print(F'Reservation {self._id} is valid {for_} of {book} on {date}.')
+
+    def change_for(self, for_):
+        print(F'Reservation {self._id} moved from {self._for} to {for_}')
+
+
+class Reservation(Reservation_Template):
+    _ids = count(0)
+    def __init__(self, from_, to, book, for_):
+        id = next(self._ids)
+        self.string_constructor = Reservation_Message(from_, to, book, for_, id)
+        super().__init__(from_, to, book, for_, id)
+
+    def overlapping(self, other):
+        self.string_constructor.overlapping(other)
+        return super(Reservation, self).overlapping(other)
+            
+    def includes(self, date):
+        self.string_constructor.includes(date)
+        return super(Reservation, self).includes(date)
         
     def identify(self, date, book, for_):
         if book != self._book: 
-            print(F'Reservation {self._id} reserves {self._book} not {book}.')
+            self.string_constructor.identify_book_problem(book)
             return False
         if for_!=self._for:
-            print(F'Reservation {self._id} is for {self._for} not {for_}.')
+            self.string_constructor.identify_for_problem(for_)
             return False
         if not self.includes(date):
-            print(F'Reservation {self._id} is from {self._from} to {self._to} which '+
-                  F'does not include {date}.')
+            self.string_constructor.identify_date_problem(date)
             return False
-        print(F'Reservation {self._id} is valid {for_} of {book} on {date}.')
-        return True        
+        self.string_constructor.identify(date, book, for_)
+        return True
         
     def change_for(self, for_):
-        print(F'Reservation {self._id} moved from {self._for} to {for_}')
-        self._for = for_
+        self.string_constructor.change_for(for_)
+        super(Reservation, self).change_for(for_)
         
 
 class Library(object):
@@ -119,4 +164,16 @@ class Library(object):
         print(F'Reservation for {user} of {book} on {date} changed to {new_user}.')        
         relevant_reservations[0].change_for(new_user)
         return True
-        
+
+
+r = Reservation(5, 12, "dorian grey", 45)
+p = Reservation(8, 10, "dorian grey", 49)
+
+print("djhdjd")
+r.overlapping(p)
+r.includes(6)
+p.includes(10)
+
+r.identify(10, "dorian grey", 45)
+r.identify(10, "dorian grey", 46)
+
