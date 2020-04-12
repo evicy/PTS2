@@ -74,6 +74,7 @@ class Reservation(Reservation_Template):
         return ret[0]
 
     def change_for(self, for_):
+        super(Reservation, self).change_for(for_)
         self.printer.print(self.printer, F'Reservation {self._id} moved from {self._for} to {for_}')
 
 
@@ -195,38 +196,15 @@ class Library(Library_Template):
         return ret[0]
 
 
-r = Reservation(5, 12, "Dorian Grey", "Peter McCallister")
-p = Reservation(8, 10, "Atlas", "Joe Peschi")
-q = Reservation(6, 9, "Dorian Grey", "Megan McCallister")
-
-
-print("RESERVATION \n")
-r.overlapping(p)
-r.overlapping(q)
-r.includes(5)
-r.includes(4)
-
-r.identify(10, "Dorian Grey", "Buzz")
-r.identify(12, "Dorian Grey", "Peter McCallister")
-
-r.change_for("Uncle Frank")
-r.includes(99)
-print("\n")
-
 print("LIBRARY \n")
 lib = Library()
-lib.add_user("Carol")
-lib.add_user("Carol")
-lib.add_user("Helen")
-lib.add_book("ABC")
-lib.add_book("ABC")
-lib.add_book("Dracula")
-lib.reserve_book("Helen", "Dracula", 2, 10)
-lib.reserve_book("Helen", "ABC", 2, 10)
-print("")
-lib.change_reservation("Helen", "ABC", 4, "Carol")
-print("")
-lib.check_reservation("Carol", "ABC", 6)
-
-
-
+lib.add_user("eva")
+lib.add_user("peto")
+lib.add_book("abc")
+lib.add_book("dracula")
+lib.reserve_book("eva", "dracula", 2, 10)
+lib.reserve_book("eva", "abc", 2, 10)
+lib.check_reservation("eva", "abc", 5)
+lib.change_reservation("eva", "abc", 5, "peto")
+lib.check_reservation("eva", "abc", 5)
+lib.check_reservation("peto", "abc", 5)
