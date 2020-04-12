@@ -150,8 +150,8 @@ class Library(Library_Template):
         ret = super(Library, self).add_book(name)
         self.printer.print(self.printer, F'Book {name} added. We have {ret} coppies of the book.')
 
-    def reserve_book(self, user, book, date_from, date_to):
-        ret = super(Library, self).reserve_book(user, book, date_from, date_to)
+    def reserve_book(self, user, book, date_from, date_to, reservation_factory=Reservation):
+        ret = super(Library, self).reserve_book(user, book, date_from, date_to, reservation_factory)
         if ret[0]:
             self.printer.print(self.printer, F'Reservation {ret[1]} included.')
 
