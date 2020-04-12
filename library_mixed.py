@@ -194,17 +194,3 @@ class Library(Library_Template):
                 self.printer.print(self.printer, F'Cannot change the reservation as {new_user} does not exist.')
 
         return ret[0]
-
-
-print("LIBRARY \n")
-lib = Library()
-lib.add_user("eva")
-lib.add_user("peto")
-lib.add_book("abc")
-lib.add_book("dracula")
-lib.reserve_book("eva", "dracula", 2, 10)
-lib.reserve_book("eva", "abc", 2, 10)
-lib.check_reservation("eva", "abc", 5)
-lib.change_reservation("eva", "abc", 5, "peto")
-lib.check_reservation("eva", "abc", 5)
-lib.check_reservation("peto", "abc", 5)
