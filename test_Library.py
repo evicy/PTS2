@@ -30,7 +30,7 @@ class Mock_Reservation_True_overlapping(Mock_Reservation):
 
 
 class Mock_Reservation_True_includes(Mock_Reservation_True_overlapping):
-    # used for reserve_book - problem with relevant reservations 
+    # used for reserve_book - problem with relevant reservations
     def includes(self, date):
         return True
 
