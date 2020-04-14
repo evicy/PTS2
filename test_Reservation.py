@@ -10,9 +10,7 @@ class Test_Reservation_Template(unittest.TestCase):
         self.res_5 = Reservation_Template(10, 12, 'atlas', 'Helen')
         self.res_6 = Reservation_Template(15, 18, 'atlas', 'Colin')
         self.res_7 = Reservation_Template(15, 18, 'harry potter', 'Megan')
-
-    def tearDown(self):
-        pass
+        self.res_8 = Reservation_Template(1, 5, 'atlas', 'Marph')
 
     def test_overlapping(self):
         self.assertTrue(self.res_1.overlapping(self.res_2))
@@ -20,12 +18,14 @@ class Test_Reservation_Template(unittest.TestCase):
         self.assertTrue(self.res_1.overlapping(self.res_4))
         self.assertTrue(self.res_1.overlapping(self.res_5))
         self.assertTrue(self.res_1.overlapping(self.res_6))
+        self.assertTrue(self.res_1.overlapping(self.res_8))
         self.assertFalse(self.res_1.overlapping(self.res_7))
         self.assertFalse(self.res_6.overlapping(self.res_7))
         self.assertFalse(self.res_2.overlapping(self.res_7))
 
     def test_includes(self):
         self.assertTrue(self.res_1.includes(5))
+        self.assertFalse(self.res_1.includes(4))
         self.assertTrue(self.res_1.includes(10))
         self.assertTrue(self.res_1.includes(15))
         self.assertFalse(self.res_1.includes(16))
@@ -37,9 +37,8 @@ class Test_Reservation_Template(unittest.TestCase):
         self.assertEqual(self.res_1.identify(5, 'atlas', 'Megan'), (False, 'for'))
 
     def test_change_for(self):
-        self.res_1.change_for('Helen')
-        self.assertEqual(self.res_1.identify(5, 'atlas', 'Helen'), (True, 'true'))
-        self.assertEqual(self.res_1.identify(5, 'atlas', 'James'), (False, 'for'))
+        self.assertEqual(self.res_1.change_for('Helen'), None)
+        self.assertEqual(self.res_1._for, 'Helen')
 
 
 if __name__ == '__main__':

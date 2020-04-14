@@ -80,9 +80,8 @@ class Test_Library_Template(unittest.TestCase):
         self.assertFalse(self.lib.check_reservation('Peter', 'a', 5))
 
     def test_change_reservation_general(self):
-        self.lib._reservations.append(Mock_Reservation_True_identify(5,10, 'a', 'Kevin'))
-        self.lib._users.add('Jane')
-        self.assertEqual(self.lib.change_reservation('Kevin', 'a', 10, 'Jane'), (True, 'true'))
+        self.lib._reservations.append(Mock_Reservation_True_identify(5, 10, 'a', 'Kevin'))
+        self.assertEqual(self.lib.change_reservation('Kevin', 'a', 10, 'Peter'), (True, 'true'))
         self.assertEqual(self.lib.change_reservation('Kevin', 'a', 10, 'NoUser'), (False, 'new_user'))
 
     def test_change_reservation_no_relevant_reservation(self):
