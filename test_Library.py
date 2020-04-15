@@ -68,7 +68,7 @@ class Test_Library_Template(unittest.TestCase):
         self.assertEqual(self.lib.reserve_book('Peter', 'b', 15, 30, Mock_Reservation), (True, 0))
 
     def test_reserve_book_problem_with_reservation(self):
-        self.assertEqual(self.lib.reserve_book('Kevin', 'c', 50, 80, Mock_Reservation_True_includes), (True, 0))
+        self.lib._reservations.append(Mock_Reservation_True_includes(50, 80, 'c', 'Kevin'))
         self.assertEqual(self.lib.reserve_book('Peter', 'c', 50, 80, Mock_Reservation_True_includes), (False, 'reservation'))
 
     def test_check_reservation_exist(self):
