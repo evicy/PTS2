@@ -11,9 +11,6 @@ class Test_Reservation_String_builder(unittest.TestCase):
     def setUp(self):
         self.res_1 = Reservation(5, 15, 'atlas', 'Kevin', MockPrinter)
 
-    def tearDown(self):
-        pass
-
     def test_includes(self):
         self.res_1.includes(10)
         self.assertEqual(self.res_1.printer.string, F'Reservation {self.res_1._id} includes 10')

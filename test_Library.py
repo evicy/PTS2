@@ -50,9 +50,6 @@ class Test_Library_Template(unittest.TestCase):
         self.lib._books['b'] = 1
         self.lib._books['c'] = 1
 
-    def tearDown(self):
-        pass
-
     def test_add_user(self):
         self.assertFalse(self.lib.add_user('Kevin'))
         self.assertTrue(self.lib.add_user('Lauren'))
