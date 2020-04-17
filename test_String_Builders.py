@@ -37,9 +37,6 @@ class Test_Library_String_builder(unittest.TestCase):
         self.lib = Library(MockPrinter)
         self.lib._users.add('Kevin')
 
-    def tearDown(self):
-        pass
-
     def test_add_user(self):
         self.lib.add_user('Kevin')
         self.assertEqual(self.lib.printer.string, F'User not created, user with name Kevin already exists.')
